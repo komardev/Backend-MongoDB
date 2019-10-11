@@ -18,6 +18,11 @@ MongoClient.connect(URL, { useNewUrlParser: true, useUnifiedTopology: true }, (e
     }
     const db = client.db(databaseName)
 
+    // HOME
+    app.get('/', (req,res)=>{
+        res.send('<h1>404 page not found</h1>')
+    })
+
     // Post Data
     app.post('/users', (req, res) => {
         let { name, role, age } = req.body
@@ -33,10 +38,20 @@ MongoClient.connect(URL, { useNewUrlParser: true, useUnifiedTopology: true }, (e
     })
 
     // Get Data
-    app.get('/users', (req, res)=>{
-        
+    app.get('/users', (req, res) => {
+        db.collection('user').find({}).toArray()
+            .then((resp) => {
+                // isi dari resp = [{},{},{}]
+                if (resp.length === 0) {
+                    return res.send({
+                        Message: 'Data Kosong !'
+                    })
+                }
+                res.send(resp)
+            }).catch((err) => {
+                res.send(err)
+            })
     })
-
 })
 
 
